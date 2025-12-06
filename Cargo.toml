@@ -1,0 +1,17 @@
+[package]
+name = "sam_frame_export_filter"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+# Aviutl2 から読み込まれる DLL にする
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = "1.0"
+aviutl2 = "0.10.0"
+log = "0.4"
+env_logger = "0.11"
+chrono = { version = "0.4", features = ["clock"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+
