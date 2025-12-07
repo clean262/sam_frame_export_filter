@@ -142,7 +142,7 @@ impl FilterPlugin for SamFrameExportFilter {
             name: "SAM Frame Export (PNG)".to_string(),
             label: Some("抽出".to_string()),
             information: format!(
-                "Export current frame to PNG for SAM / v{}",
+                "SAM frame export filter v{} by cleaning (https://github.com/clean262/sam_frame_export_filter)",
                 env!("CARGO_PKG_VERSION")
             ),
             filter_type: aviutl2::filter::FilterType::Video,
