@@ -1,0 +1,56 @@
+name: Build and Release AviUtl2 Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'      # v0.1.0 みたいなタグを push すると自動実行
+  workflow_dispatch:  # 手動実行もできるようにしておく
+
+permissions:
+  contents: write   # Release にファイルをアップロードするために必要
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build (release)
+        run: cargo build --release
+
+      - name: Prepare dist folder
+        shell: pwsh
+        run: |
+          # 配布用フォルダ dist を作成
+          New-Item -ItemType Directory -Path dist | Out-Null
+
+          # DLL -> .auf にリネームして dist に置く
+          Copy-Item target/release/sam_frame_export_filter.dll dist/sam_frame_export_filter.auf
+
+          # sam_frame_export_filter/web 以下に index.* をコピー
+          New-Item -ItemType Directory -Path dist/sam_frame_export_filter/web -Force | Out-Null
+          Copy-Item web/* dist/sam_frame_export_filter/web/
+
+          # zip 作成（タグ名をファイル名に含める）
+          $zipName = "sam_frame_export_filter-$(${env:GITHUB_REF_NAME})-windows-x64.zip"
+          Compress-Archive -Path dist/* -DestinationPath $zipName
+
+      - name: Upload artifact (for debugging / CI)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sam_frame_export_filter-${{ github.ref_name }}-windows-x64
+          path: sam_frame_export_filter-${{ github.ref_name }}-windows-x64.zip
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: sam_frame_export_filter-${{ github.ref_name }}-windows-x64.zip
+          generate_release_notes: true
