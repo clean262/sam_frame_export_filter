@@ -31,8 +31,8 @@ jobs:
           # 配布用フォルダ dist を作成
           New-Item -ItemType Directory -Path dist | Out-Null
 
-          # DLL -> .auf にリネームして dist に置く
-          Copy-Item target/release/sam_frame_export_filter.dll dist/sam_frame_export_filter.auf
+          # DLL -> .auf2 にリネームして dist に置く
+          Copy-Item target/release/sam_frame_export_filter.dll dist/sam_frame_export_filter.auf2
 
           # sam_frame_export_filter/web 以下に index.* をコピー
           New-Item -ItemType Directory -Path dist/sam_frame_export_filter/web -Force | Out-Null
