@@ -19,10 +19,19 @@ const crossIcon = document.getElementById("cross-icon");
 const maskCanvas = document.getElementById("mask-output");
 const maskContext = maskCanvas.getContext("2d");
 const loadFromAviUtl2Button = document.getElementById("load-from-aviutl2");
+const modelSelect = document.getElementById("model-select"); 
 const AVIUTL2_FRAME_URL = "http://127.0.0.1:17860/frame/current.png";
 const AVIUTL2_MASK_URL = "http://127.0.0.1:17860/mask"; 
 const EXAMPLE_URL =
   "https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/corgi.jpg";
+const MODEL_IDS = {
+  slimsam: "Xenova/slimsam-77-uniform",
+  sam_vit_base: "Xenova/sam-vit-base",
+  sam_vit_large: "Xenova/sam-vit-large",
+};
+// モデル・プロセッサをモデルごとにキャッシュ
+const modelCache = {};      // key: "slimsam" など → SamModel
+const processorCache = {};  // key: "slimsam" など → AutoProcessor
 
 // State variables
 let isEncoding = false;
@@ -33,6 +42,38 @@ let isMultiMaskMode = false;
 let imageInput = null;
 let imageProcessed = null;
 let imageEmbeddings = null;
+// 現在選択中のキー（セレクトボックスと同期）
+let currentModelKey = "slimsam";
+// 既存の model_id という変数名を維持
+let model_id = MODEL_IDS[currentModelKey];
+// decode()/encode() から参照される実際のインスタンス
+let model = null;
+let processor = null;
+
+async function loadCurrentModelIfNeeded() {
+  // セレクトボックスがあればその値、なければ現在値を使う
+  const key = modelSelect ? modelSelect.value : currentModelKey;
+  currentModelKey = key;
+
+  // "slimsam" → "Xenova/slimsam-77-uniform" の変換
+  model_id = MODEL_IDS[key];
+
+  // まだロードしていないモデルならロードを開始
+  if (!modelCache[key]) {
+    // 初回ロード中に再度呼ばれても同じ Promise を使えるよう、そのまま代入する
+    modelCache[key] = SamModel.from_pretrained(model_id, {
+      dtype: "fp16", // 既存設定をそのまま維持
+      device: "webgpu",
+    });
+    processorCache[key] = AutoProcessor.from_pretrained(model_id);
+  }
+
+  // 実際にロード完了を待つ
+  [model, processor] = await Promise.all([
+    modelCache[key],
+    processorCache[key],
+  ]);
+}
 
 async function decode() {
   // Only proceed if we are not already decoding
@@ -235,6 +276,17 @@ loadFromAviUtl2Button.addEventListener("click", (e) => {
   loadFromAviUtl2();
 });
 
+if (modelSelect) {
+  modelSelect.addEventListener("change", async () => {
+    // いったん画像状態をリセット
+    resetImageState();
+
+    statusLabel.textContent = "Loading model...";
+    await loadCurrentModelIfNeeded();  // セレクトの value を読んで新しい model / processor をロード
+    statusLabel.textContent = "Ready";
+  });
+}
+
 // Attach hover event to image container
 imageContainer.addEventListener("mousedown", (e) => {
   if (e.button !== 0 && e.button !== 2) {
@@ -356,13 +408,8 @@ cutButton.addEventListener("click", async () => {
   }
 });
 
-const model_id = "Xenova/slimsam-77-uniform";
 statusLabel.textContent = "Loading model...";
-const model = await SamModel.from_pretrained(model_id, {
-  dtype: "fp16", // or "fp32"
-  device: "webgpu",
-});
-const processor = await AutoProcessor.from_pretrained(model_id);
+await loadCurrentModelIfNeeded();
 statusLabel.textContent = "Ready";
 
 // Enable the user interface
