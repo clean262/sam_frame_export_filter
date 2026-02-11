@@ -1,4 +1,9 @@
 ## 概要
+[![Release](https://img.shields.io/github/v/release/clean262/sam_frame_export_filter)](https://github.com/clean262/sam_frame_export_filter)
+[![Downloads](https://img.shields.io/github/downloads/clean262/sam_frame_export_filter/total)](https://github.com/clean262/sam_frame_export_filter/releases/latest)
+[![License](https://img.shields.io/github/license/clean262/sam_frame_export_filter?v=2)](https://github.com/clean262/sam_frame_export_filter/blob/main/LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/clean262/sam_frame_export_filter)](https://github.com/clean262/sam_frame_export_filter/commits/main)
+
 クリックベースで簡単に物体を切り取れるAviutl2プラグインです。
 MetaのSAMを用いています。
 
@@ -115,3 +120,7 @@ cf) `C:\ProgramData\aviutl2\example\a.png`を選択した場合`C:\ProgramData\a
 一方最も遅いが性能の良い`sam-vit-large`で切り抜いた結果が以下になります
 
 ![bad result](assets/large_model.png?raw=true)
+
+## ライセンス
+
+**MIT ライセンス**です。
