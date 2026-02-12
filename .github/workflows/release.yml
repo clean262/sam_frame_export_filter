@@ -28,29 +28,44 @@ jobs:
       - name: Prepare dist folder
         shell: pwsh
         run: |
-          # 配布用フォルダ dist を作成
+          # クリーン & dist作成
+          if (Test-Path dist) { Remove-Item dist -Recurse -Force }
           New-Item -ItemType Directory -Path dist | Out-Null
 
-          # DLL -> .auf2 にリネームして dist に置く
-          Copy-Item target/release/sam_frame_export_filter.dll dist/sam_frame_export_filter.auf2
+          # ZIP展開後の最上位フォルダ名（バージョン無し固定）
+          $pkgRoot = "sam_frame_export_filter-windows-x64"
+          $pkgDir  = Join-Path dist $pkgRoot
+          New-Item -ItemType Directory -Path $pkgDir -Force | Out-Null
+
+          # DLL -> .auf2 を最上位フォルダ直下へ
+          Copy-Item target/release/sam_frame_export_filter.dll (Join-Path $pkgDir "sam_frame_export_filter.auf2")
 
           # sam_frame_export_filter/web 以下に index.* をコピー
-          New-Item -ItemType Directory -Path dist/sam_frame_export_filter/web -Force | Out-Null
-          Copy-Item web/* dist/sam_frame_export_filter/web/
+          New-Item -ItemType Directory -Path (Join-Path $pkgDir "sam_frame_export_filter/web") -Force | Out-Null
+          Copy-Item web/* (Join-Path $pkgDir "sam_frame_export_filter/web/")
 
-          # zip 作成（タグ名をファイル名に含める）
+          # zipファイル名はタグ入りのまま
           $zipName = "sam_frame_export_filter-$(${env:GITHUB_REF_NAME})-windows-x64.zip"
-          Compress-Archive -Path dist/* -DestinationPath $zipName
+
+          # dist配下から圧縮して "dist/" プレフィックスがZIPに入らないようにする
+          Push-Location dist
+          Compress-Archive -Path $pkgRoot -DestinationPath (Join-Path .. $zipName) -Force
+          Pop-Location
+
+          # 後続stepで使うために環境変数へ
+          "ZIP_NAME=$zipName" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "PKG_ROOT=$pkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
 
       - name: Upload artifact (for debugging / CI)
         uses: actions/upload-artifact@v4
         with:
           name: sam_frame_export_filter-${{ github.ref_name }}-windows-x64
-          path: sam_frame_export_filter-${{ github.ref_name }}-windows-x64.zip
+          path: ${{ env.ZIP_NAME }}
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: sam_frame_export_filter-${{ github.ref_name }}-windows-x64.zip
+          files: ${{ env.ZIP_NAME }}
           generate_release_notes: true
