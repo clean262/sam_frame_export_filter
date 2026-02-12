@@ -42,26 +42,31 @@ jobs:
 
           # sam_frame_export_filter/web 以下に index.* をコピー
           New-Item -ItemType Directory -Path (Join-Path $pkgDir "sam_frame_export_filter/web") -Force | Out-Null
-          Copy-Item web/* (Join-Path $pkgDir "sam_frame_export_filter/web/")
+          Copy-Item web/* (Join-Path $pkgDir "sam_frame_export_filter/web/") -Recurse -Force
 
-          # zipファイル名はタグ入りのまま
-          $zipName = "sam_frame_export_filter-$(${env:GITHUB_REF_NAME})-windows-x64.zip"
+          # zipファイル名は固定
+          $zipName = "sam_frame_export_filter-windows-x64.zip"
+
+          # 出力先 out を作る（distの外に置く）
+          if (Test-Path out) { Remove-Item out -Recurse -Force }
+          New-Item -ItemType Directory -Path out | Out-Null
 
           # dist配下から圧縮して "dist/" プレフィックスがZIPに入らないようにする
           Push-Location dist
-          Compress-Archive -Path $pkgRoot -DestinationPath (Join-Path .. $zipName) -Force
+          Compress-Archive -Path $pkgRoot -DestinationPath (Join-Path .. "out/$zipName") -Force
           Pop-Location
 
           # 後続stepで使うために環境変数へ
-          "ZIP_NAME=$zipName" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "ZIP_NAME=out/$zipName" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           "PKG_ROOT=$pkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
 
       - name: Upload artifact (for debugging / CI)
         uses: actions/upload-artifact@v4
         with:
-          name: sam_frame_export_filter-${{ github.ref_name }}-windows-x64
-          path: ${{ env.ZIP_NAME }}
+          # Artifactは“フォルダ”をアップしておく（zip-in-zip回避）
+          name: sam_frame_export_filter-windows-x64
+          path: dist/${{ env.PKG_ROOT }}
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
