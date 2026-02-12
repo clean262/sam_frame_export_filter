@@ -53,7 +53,8 @@ jobs:
 
           # dist配下から圧縮して "dist/" プレフィックスがZIPに入らないようにする
           Push-Location dist
-          Compress-Archive -Path $pkgRoot -DestinationPath (Join-Path .. "out/$zipName") -Force
+          # $pkgRoot フォルダ自体ではなく「中身」をZIPに入れる（同名フォルダ二重化を防ぐ）
+          Compress-Archive -Path (Join-Path $pkgRoot '*') -DestinationPath (Join-Path .. "out/$zipName") -Force
           Pop-Location
 
           # 後続stepで使うために環境変数へ
@@ -66,7 +67,7 @@ jobs:
         with:
           # Artifactは“フォルダ”をアップしておく（zip-in-zip回避）
           name: sam_frame_export_filter-windows-x64
-          path: dist/${{ env.PKG_ROOT }}
+          path: dist/${{ env.PKG_ROOT }}/*
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
