@@ -39,11 +39,21 @@ MetaのSAMを用いています。
 
 ![check web gpu usage](assets/webgpu.png?raw=true)
 
-### 2. Releaseからダウンロードする
-[Release](https://github.com/clean262/sam_frame_export_filter/releases/latest) から zipファイルをダウンロードして下さい。
+### 2. Aviutl2-catalogからプラグインをダウンロードする場合(推奨)
+[Aviutl2-catalog](https://github.com/Neosku/aviutl2-catalog)をダウンロードし、インストールボタンを押すだけで導入は完了です。
 
-### 3. zipファイルを展開し、中身を配置する
-zipファイルを展開し、中身を以下のように配置してください
+> **Aviutl2-catalog** は、AviUtl2 のプラグインやスクリプトを「検索→導入→更新」まで一括管理できるデスクトップアプリです。<br>
+> 従来のようにダウンロード時には解凍してファイルを移動させる必要はありません。<br>
+また、アップデートがあれば通知が来て1クリックで更新も完了します。<br>
+> 利用したプラグイン/スクリプトの親作品リストも一括で取得できます。
+
+![catalog](assets/catalog.png?raw=true)
+
+### 2. Releaseからダウンロードする場合(Optional)
+[Aviutl2-catalog](https://github.com/Neosku/aviutl2-catalog)を利用されない方はこの方法でダウンロードしてください。<br>
+まず、[Release](https://github.com/clean262/sam_frame_export_filter/releases/latest) から zipファイルをダウンロードして下さい。
+
+その後zipファイルを展開し、中身を以下のように配置してください
 
 |ファイル・フォルダ名|配置先|
 |:---|:---|
