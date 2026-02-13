@@ -7,9 +7,10 @@
 クリックベースで簡単に物体を切り取れるAviutl2プラグインです。
 MetaのSAMを用いています。
 
-現状**静止画のみ**に対応しています。(動画素材の場合は静止画に切り取ってから背景除去を行います。)
+本プラグインは**静止画のみ**に対応しています。(動画素材の場合は静止画に切り取ってから背景除去を行います。)
 
-**動画素材に対して**BB素材として切り取るには[こちら](https://www.nicovideo.jp/watch/sm44970717) (注: Aviutl2プラグインではありません)
+**動画素材に対して**BB素材として切り取るには[こちら](https://www.nicovideo.jp/watch/sm45931905) (Aviutl2プラグイン) <br>
+ダウンロード不要で、動画素材を切り取りたい方は[こちら](https://www.nicovideo.jp/watch/sm44970717) (Google Colab)
 
 - マウスクリックだけで前景・背景を指定
 - ブラウザ上でプレビューしながらマスクを調整
@@ -18,16 +19,21 @@ MetaのSAMを用いています。
 ![use example](assets/example.png?raw=true)
 
 ## 利用に際して
-本スクリプトを用いて動画制作を行った場合親作品登録をしていただけると喜びます。
-
+本スクリプトを用いて動画制作を行った場合[親作品登録](https://www.nicovideo.jp/watch/sm45723074)をしていただけると開発の励みになります。<br>
 親作品登録いただいたら見に行きます。
 
 **解説動画**は[こちら](https://www.nicovideo.jp/watch/sm45723074)から
 
-将来的には動画素材にも対応できるように検討中です。開発状況等は作者[X: 旧twitter](https://x.com/clean123525)を参照してください。
+開発状況等は作者[X: 旧twitter](https://x.com/clean123525)を参照してください。
 
 バグ報告や機能追加の要望がありましたら[Issues](https://github.com/clean262/sam_frame_export_filter/issues)から気軽にお願いします。
 右上`New issue`ボタンから送れます。
+
+また本プラグインはコミュニティの発展のために、Aviutl2本体の[親作品登録](https://commons.nicovideo.jp/works/nc422952)を推奨しています。<br>
+[Aviutl2-catalog](https://github.com/Neosku/aviutl2-catalog)を利用することでAviutl2本体/プラグイン/スクリプトの親作品リストを一括で取得できます。<br>
+<a href="https://commons.nicovideo.jp/works/nc422952">
+  <img src="assets/aviutl2.png?raw=true" alt="samune" height="320">
+</a>
 
 ## 導入方法
 ### 1. webGPUを使えるようにする
